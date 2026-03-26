@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerbyBack API Tester</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f0f14;
+            color: #e4e4e7;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #71717a;
+        }
+
+        .sections {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .section {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.25rem 1.5rem;
+            background: #1f1f23;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .method {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            background: #22c55e;
+            color: #052e16;
+        }
+
+        .method.get { background: #22c55e; color: #052e16; }
+        .method.post { background: #3b82f6; color: #1e3a5f; }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        .test-card {
+            background: #141417;
+            border: 1px solid #27272a;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .test-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .test-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .test-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .test-path {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #a1a1aa;
+            background: #27272a;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        input, select {
+            background: #1f1f23;
+            border: 1px solid #3f3f46;
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.875rem;
+            color: #e4e4e7;
+            font-size: 0.875rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #6366f1;
+        }
+
+        input::placeholder {
+            color: #71717a;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #27272a;
+        }
+
+        .btn-secondary:hover {
+            background: #3f3f46;
+        }
+
+        .result {
+            background: #0c0c0f;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .result.error {
+            color: #f87171;
+        }
+
+        .result.success {
+            color: #4ade80;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .status.ok { background: #166534; color: #4ade80; }
+        .status.error { background: #991b1b; color: #f87171; }
+        .status.loading { background: #1e3a5f; color: #60a5fa; }
+
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #3f3f46;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .quick-btn {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            font-family: inherit;
+        }
+
+        .quick-btn:hover {
+            opacity: 0.9;
+        }
+
+        .quick-btn:active {
+            transform: scale(0.96);
+        }
+
+        .verb-display {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .conjugation-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mode-section {
+            background: #1a1a1d;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .mode-title {
+            font-weight: 600;
+            color: #a855f7;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .tense-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .tense-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .tense-name {
+            color: #71717a;
+        }
+
+        .forms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .form {
+            background: #27272a;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .simple-forms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .simple-form {
+            background: #27272a;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .pronoun {
+            color: #71717a;
+            margin-right: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VerbyBack API Tester</h1>
+            <p>French Conjugation & Search API</p>
+        </header>
+
+        <div class="sections">
+            <section class="section">
+                <div class="section-header">
+                    <span class="method get">GET</span>
+                    <h2>Health Check</h2>
+                </div>
+                <div class="section-body">
+                    <div class="test-card">
+                        <div class="test-controls">
+                            <button class="btn" onclick="testHealth()">Check Health</button>
+                        </div>
+                        <div id="health-result" class="result" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <span class="method get">GET</span>
+                    <h2>Search Verbs</h2>
+                </div>
+                <div class="section-body">
+                    <div class="test-card">
+                        <div class="test-header">
+                            <span class="test-title">Search for verbs</span>
+                            <span class="test-path">/api/search/:query</span>
+                        </div>
+                        <div class="test-controls">
+                            <input type="text" id="search-query" placeholder="e.g., parl, mang, fair">
+                            <button class="btn" onclick="testSearch()">Search</button>
+                        </div>
+                        <div id="search-result" class="result" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <span class="method get">GET</span>
+                    <h2>Conjugate Verb</h2>
+                </div>
+                <div class="section-body">
+                    <div class="test-card">
+                        <div class="test-header">
+                            <span class="test-title">Get all conjugations</span>
+                            <span class="test-path">/api/conjugate/:verb</span>
+                        </div>
+                        <div class="test-controls">
+                            <input type="text" id="conj-verb" placeholder="e.g., manger, avoir, être">
+                            <button class="btn" onclick="testConjugate()">Conjugate</button>
+                        </div>
+                        <div id="conj-result" class="result" style="display:none;"></div>
+                    </div>
+
+                    <div class="test-card">
+                        <div class="test-header">
+                            <span class="test-title">Get conjugations by mode</span>
+                            <span class="test-path">/api/conjugate/:verb/:mode</span>
+                        </div>
+                        <div class="test-controls">
+                            <input type="text" id="conj-verb-2" placeholder="Verb">
+                            <select id="conj-mode">
+                                <option value="">Select Mode</option>
+                                <option value="indicatif">Indicatif</option>
+                                <option value="conditionnel">Conditionnel</option>
+                                <option value="subjonctif">Subjonctif</option>
+                                <option value="imperatif">Impératif</option>
+                                <option value="infinitif">Infinitif</option>
+                                <option value="participe">Participe</option>
+                            </select>
+                            <button class="btn" onclick="testConjugateMode()">Get Mode</button>
+                        </div>
+                        <div id="conj-mode-result" class="result" style="display:none;"></div>
+                    </div>
+
+                    <div class="test-card">
+                        <div class="test-header">
+                            <span class="test-title">Get conjugations by mode & tense</span>
+                            <span class="test-path">/api/conjugate/:verb/:mode/:tense</span>
+                        </div>
+                        <div class="test-controls">
+                            <input type="text" id="conj-verb-3" placeholder="Verb">
+                            <select id="conj-mode-2">
+                                <option value="">Select Mode</option>
+                                <option value="indicatif">Indicatif</option>
+                                <option value="conditionnel">Conditionnel</option>
+                                <option value="subjonctif">Subjonctif</option>
+                                <option value="imperatif">Impératif</option>
+                                <option value="infinitif">Infinitif</option>
+                                <option value="participe">Participe</option>
+                            </select>
+                            <select id="conj-tense">
+                                <option value="">Select Tense</option>
+                            </select>
+                            <button class="btn" onclick="testConjugateTense()">Get Tense</button>
+                        </div>
+                        <div id="conj-tense-result" class="result" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <span class="method get">GET</span>
+                    <h2>Random Verb</h2>
+                </div>
+                <div class="section-body">
+                    <div class="test-card">
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="testRandom()">Random Verb</button>
+                            <button class="quick-btn" onclick="testRandomMode('indicatif')">Random Indicatif</button>
+                            <button class="quick-btn" onclick="testRandomMode('subjonctif')">Random Subjonctif</button>
+                            <button class="quick-btn" onclick="testRandomMode('conditionnel')">Random Conditionnel</button>
+                        </div>
+
+                        <div class="test-controls">
+                            <input type="text" id="random-mode" placeholder="Mode (optional)">
+                            <input type="text" id="random-tense" placeholder="Tense (optional)">
+                            <button class="btn" onclick="testRandomCustom()">Get Random</button>
+                        </div>
+                        <div id="random-result" class="result" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        const tensesByMode = {
+            'indicatif': ['present', 'passe-simple', 'imparfait', 'futur-simple', 'plus-que-parfait', 'passe-anterieur', 'futur-anterieur', 'passe-compose'],
+            'conditionnel': ['present', 'passe'],
+            'subjonctif': ['present', 'passe'],
+            'imperatif': ['present', 'passe'],
+            'infinitif': ['present', 'passe'],
+            'participe': ['present', 'passe']
+        };
+
+        document.getElementById('conj-mode-2').addEventListener('change', function() {
+            const tenseSelect = document.getElementById('conj-tense');
+            tenseSelect.innerHTML = '<option value="">Select Tense</option>';
+            
+            if (this.value && tensesByMode[this.value]) {
+                tensesByMode[this.value].forEach(tense => {
+                    const option = document.createElement('option');
+                    option.value = tense;
+                    option.textContent = tense.replace(/-/g, ' ');
+                    tenseSelect.appendChild(option);
+                });
+            }
+        });
+
+        async function fetchAPI(url) {
+            const response = await fetch(url);
+            const data = await response.json();
+            return { status: response.status, data };
+        }
+
+        function showResult(elementId, status, data, isHtml = false) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            
+            let statusClass = status < 400 ? 'success' : 'error';
+            let statusBadge = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>`;
+            
+            if (isHtml) {
+                el.innerHTML = statusBadge + data;
+            } else {
+                el.className = `result ${statusClass}`;
+                el.textContent = JSON.stringify(data, null, 2);
+            }
+        }
+
+        function formatConjugations(data) {
+            if (!data.conjugations) {
+                return JSON.stringify(data, null, 2);
+            }
+
+            let html = `<div class="verb-display">${data.verb}</div>`;
+            html += '<div class="conjugation-grid">';
+
+            for (const [mode, tenses] of Object.entries(data.conjugations)) {
+                html += `<div class="mode-section">`;
+                html += `<div class="mode-title">${mode}</div>`;
+                html += '<div class="tense-grid">';
+
+                for (const [tense, forms] of Object.entries(tenses)) {
+                    html += `<div class="tense-row">`;
+                    html += `<span class="tense-name">${tense}</span>`;
+                    html += `<div class="forms">`;
+                    
+                    const pronouns = ['Je', 'Tu', 'Il/Elle', 'Nous', 'Vous', 'Ils/Elles'];
+                    forms.forEach((form, i) => {
+                        const pronoun = pronouns[i % pronouns.length];
+                        html += `<span class="form"><span class="pronoun">${pronoun}</span>${form}</span>`;
+                    });
+                    
+                    html += `</div></div>`;
+                }
+
+                html += '</div></div>';
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function formatSimpleResult(data) {
+            if (data.forms) {
+                const pronouns = ['Je', 'Tu', 'Il/Elle', 'Nous', 'Vous', 'Ils/Elles'];
+                let html = `<div class="verb-display">${data.verb}</div>`;
+                html += `<div style="text-align:center;color:#a855f7;margin-bottom:1rem;">${data.mode}${data.tense ? ' • ' + data.tense : ''}</div>`;
+                html += '<div class="simple-forms">';
+                data.forms.forEach((form, i) => {
+                    const pronoun = pronouns[i % pronouns.length];
+                    html += `<span class="simple-form"><span class="pronoun">${pronoun}</span>${form}</span>`;
+                });
+                html += '</div>';
+                return html;
+            }
+            return JSON.stringify(data, null, 2);
+        }
+
+        async function testHealth() {
+            const el = document.getElementById('health-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/health`);
+                showResult('health-result', status, data);
+            } catch (e) {
+                showResult('health-result', 500, { error: e.message });
+            }
+        }
+
+        async function testSearch() {
+            const query = document.getElementById('search-query').value.trim();
+            if (!query) return;
+            
+            const el = document.getElementById('search-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/search/${encodeURIComponent(query)}`);
+                showResult('search-result', status, data);
+            } catch (e) {
+                showResult('search-result', 500, { error: e.message });
+            }
+        }
+
+        async function testConjugate() {
+            const verb = document.getElementById('conj-verb').value.trim();
+            if (!verb) return;
+            
+            const el = document.getElementById('conj-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}`);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatConjugations(data);
+            } catch (e) {
+                showResult('conj-result', 500, { error: e.message });
+            }
+        }
+
+        async function testConjugateMode() {
+            const verb = document.getElementById('conj-verb-2').value.trim();
+            const mode = document.getElementById('conj-mode').value;
+            if (!verb || !mode) return;
+            
+            const el = document.getElementById('conj-mode-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}/${mode}`);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+            } catch (e) {
+                showResult('conj-mode-result', 500, { error: e.message });
+            }
+        }
+
+        async function testConjugateTense() {
+            const verb = document.getElementById('conj-verb-3').value.trim();
+            const mode = document.getElementById('conj-mode-2').value;
+            const tense = document.getElementById('conj-tense').value;
+            if (!verb || !mode || !tense) return;
+            
+            const el = document.getElementById('conj-tense-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}/${mode}/${tense}`);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+            } catch (e) {
+                showResult('conj-tense-result', 500, { error: e.message });
+            }
+        }
+
+        async function testRandom() {
+            const el = document.getElementById('random-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/random`);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatConjugations(data);
+            } catch (e) {
+                showResult('random-result', 500, { error: e.message });
+            }
+        }
+
+        async function testRandomMode(mode) {
+            document.getElementById('random-mode').value = mode;
+            const el = document.getElementById('random-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(`${API_BASE}/api/random/${mode}`);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+            } catch (e) {
+                showResult('random-result', 500, { error: e.message });
+            }
+        }
+
+        async function testRandomCustom() {
+            const mode = document.getElementById('random-mode').value.trim();
+            const tense = document.getElementById('random-tense').value.trim();
+            
+            let url = `${API_BASE}/api/random`;
+            if (mode) url += `/${mode}`;
+            if (tense) url += `/${tense}`;
+            
+            const el = document.getElementById('random-result');
+            el.style.display = 'block';
+            el.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const { status, data } = await fetchAPI(url);
+                el.className = 'result';
+                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + (mode ? formatSimpleResult(data) : formatConjugations(data));
+            } catch (e) {
+                showResult('random-result', 500, { error: e.message });
+            }
+        }
+
+        testHealth();
+    </script>
+</body>
+</html>

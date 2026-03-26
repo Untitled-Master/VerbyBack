@@ -2,11 +2,45 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'test')));
+
+async function getRandomVerb(mode, tense) {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+    const verbs = await searchVerbs(randomLetter);
+    
+    if (verbs.length === 0) {
+        throw new Error('No verbs found');
+    }
+
+    const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+    const conjugations = await getConjugations(randomVerb);
+
+    if (mode && tense) {
+        const modeSlug = slugify(mode);
+        const tenseSlug = slugify(tense);
+        const modeName = Object.keys(conjugations.conjugations).find(m => slugify(m) === modeSlug);
+        if (!modeName) throw new Error(`Mode "${mode}" not found`);
+        const tenseName = Object.keys(conjugations.conjugations[modeName]).find(t => slugify(t) === tenseSlug);
+        if (!tenseName) throw new Error(`Tense "${tense}" not found`);
+        return { verb: randomVerb, mode: modeName, tense: tenseName, forms: conjugations.conjugations[modeName][tenseName] };
+    }
+
+    if (mode) {
+        const modeSlug = slugify(mode);
+        const modeName = Object.keys(conjugations.conjugations).find(m => slugify(m) === modeSlug);
+        if (!modeName) throw new Error(`Mode "${mode}" not found`);
+        return { verb: randomVerb, mode: modeName, tenses: conjugations.conjugations[modeName] };
+    }
+
+    return conjugations;
+}
 
 /**
  * Normalizes strings for URL matching.
@@ -163,6 +197,21 @@ app.get('/', (req, res) => {
                 path: '/api/conjugate/:verb/:mode/:tense',
                 description: 'Get conjugations for a specific mode and tense'
             },
+            random: {
+                method: 'GET',
+                path: '/api/random',
+                description: 'Get a random verb with all conjugations'
+            },
+            random_mode: {
+                method: 'GET',
+                path: '/api/random/:mode',
+                description: 'Get a random verb with conjugations for a specific mode'
+            },
+            random_tense: {
+                method: 'GET',
+                path: '/api/random/:mode/:tense',
+                description: 'Get a random verb with conjugations for a specific mode and tense'
+            },
             health: {
                 method: 'GET',
                 path: '/health',
@@ -217,6 +266,33 @@ app.get('/api/conjugate/:verb/:mode/:tense', async (req, res) => {
         res.json({ verb, mode: actualModeName, tense: actualTenseName, forms: modeData[actualTenseName] });
     } catch (error) {
         res.status(404).json({ error: error.message });
+    }
+});
+
+app.get('/api/random', async (req, res) => {
+    try {
+        const data = await getRandomVerb();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/random/:mode', async (req, res) => {
+    try {
+        const data = await getRandomVerb(req.params.mode);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/random/:mode/:tense', async (req, res) => {
+    try {
+        const data = await getRandomVerb(req.params.mode, req.params.tense);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
