@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerbyBack API Tester</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,159 +12,276 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #0f0f0f;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --text-primary: #F0EFEB;
+            --text-secondary: #999999;
+            --text-muted: #666666;
+            --accent: #F34204;
+            --accent-hover: #FF5722;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f0f14;
-            color: #e4e4e7;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 2rem;
+            display: flex;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
+        .sidebar-inner {
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            color: #71717a;
-        }
-
-        .sections {
-            display: grid;
-            gap: 2rem;
-        }
-
-        .section {
-            background: #18181b;
-            border: 1px solid #27272a;
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 1.25rem 1.5rem;
-            background: #1f1f23;
-            border-bottom: 1px solid #27272a;
+        .sidebar-header {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        .section-header h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            object-fit: cover;
         }
 
-        .method {
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-subtitle {
             font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.65rem;
             font-weight: 600;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            background: #22c55e;
-            color: #052e16;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
         }
 
-        .method.get { background: #22c55e; color: #052e16; }
-        .method.post { background: #3b82f6; color: #1e3a5f; }
-
-        .section-body {
-            padding: 1.5rem;
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
         }
 
-        .test-card {
-            background: #141417;
-            border: 1px solid #27272a;
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
-        .test-card:last-child {
-            margin-bottom: 0;
+        .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border);
         }
 
-        .test-header {
+        .nav-item .method {
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            background: var(--accent);
+            color: white;
+            letter-spacing: 0.02em;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.15s;
+        }
+
+        .sidebar-footer a:hover {
+            color: var(--text-secondary);
+        }
+
+        .main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2.5rem 3rem;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .test-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header {
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1rem;
         }
 
-        .test-title {
+        .panel-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
             font-weight: 600;
-            font-size: 0.95rem;
+            letter-spacing: -0.01em;
         }
 
-        .test-path {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: #a1a1aa;
-            background: #27272a;
+        .panel-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
             padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
         }
 
-        .test-controls {
+        .panel-body {
+            padding: 1.25rem;
+        }
+
+        .input-row {
             display: flex;
             gap: 0.75rem;
-            flex-wrap: wrap;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         input, select {
-            background: #1f1f23;
-            border: 1px solid #3f3f46;
-            border-radius: 0.5rem;
-            padding: 0.6rem 0.875rem;
-            color: #e4e4e7;
-            font-size: 0.875rem;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.85rem;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.15s;
         }
 
         input:focus, select:focus {
-            border-color: #6366f1;
+            border-color: var(--accent);
         }
 
         input::placeholder {
-            color: #71717a;
+            color: var(--text-muted);
         }
 
         select {
             cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2.25rem;
         }
 
         .btn {
-            background: #6366f1;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 6px;
             padding: 0.6rem 1.25rem;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.15s;
             font-family: inherit;
+            white-space: nowrap;
         }
 
         .btn:hover {
-            background: #4f46e5;
+            background: var(--accent-hover);
         }
 
         .btn:active {
@@ -176,54 +293,100 @@
             cursor: not-allowed;
         }
 
-        .btn-secondary {
-            background: #27272a;
+        .result-area {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
         }
 
-        .btn-secondary:hover {
-            background: #3f3f46;
+        .result-area.visible {
+            display: block;
         }
 
-        .result {
-            background: #0c0c0f;
-            border-radius: 0.5rem;
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-badge.ok {
+            background: rgba(243, 66, 4, 0.15);
+            color: var(--accent);
+        }
+
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            transition: color 0.15s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-secondary);
+        }
+
+        .result-content {
             padding: 1rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.8rem;
-            overflow-x: auto;
-            max-height: 400px;
+            max-height: 450px;
             overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .result-content pre {
             white-space: pre-wrap;
             word-break: break-word;
+            color: var(--text-secondary);
         }
 
-        .result.error {
-            color: #f87171;
+        .result-content.error pre {
+            color: #ef4444;
         }
-
-        .result.success {
-            color: #4ade80;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .status.ok { background: #166534; color: #4ade80; }
-        .status.error { background: #991b1b; color: #f87171; }
-        .status.loading { background: #1e3a5f; color: #60a5fa; }
 
         .loading {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #3f3f46;
-            border-top-color: #6366f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -232,250 +395,474 @@
             to { transform: rotate(360deg); }
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #27272a;
-        }
-
-        .quick-btn {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white;
-            border: none;
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            font-family: inherit;
-        }
-
-        .quick-btn:hover {
-            opacity: 0.9;
-        }
-
-        .quick-btn:active {
-            transform: scale(0.96);
-        }
-
-        .verb-display {
-            font-size: 3rem;
-            font-weight: 700;
+        .verb-hero {
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
             text-align: center;
-            margin: 1rem 0;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .conjugation-grid {
-            display: grid;
-            gap: 1rem;
+        .verb-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
         }
 
-        .mode-section {
-            background: #1a1a1d;
-            border-radius: 0.5rem;
-            padding: 1rem;
+        .verb-meta {
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
-        .mode-title {
+        .verb-meta span {
+            color: var(--text-secondary);
+        }
+
+        .conjugation-body {
+            padding: 0;
+        }
+
+        .mode-block {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mode-block:last-child {
+            border-bottom: none;
+        }
+
+        .mode-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .mode-header:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .mode-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .mode-name {
             font-weight: 600;
-            color: #a855f7;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+        }
+
+        .mode-toggle {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 0.7rem;
         }
 
         .tense-grid {
-            display: grid;
-            gap: 0.5rem;
+            display: none;
+            padding: 0 1rem 1rem;
         }
 
-        .tense-row {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 0.5rem;
-            font-size: 0.85rem;
+        .tense-grid.expanded {
+            display: block;
+        }
+
+        .tense-grid-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .tense-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
         }
 
         .tense-name {
-            color: #71717a;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
         }
 
-        .forms {
+        .conjugation-table {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
-        .form {
-            background: #27272a;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.85rem;
-        }
-
-        .simple-forms {
+        .conjugation-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .simple-form {
-            background: #27272a;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.25rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+            padding: 0.25rem 0;
         }
 
         .pronoun {
-            color: #71717a;
-            margin-right: 0.25rem;
+            color: var(--text-muted);
+            min-width: 60px;
+            font-size: 0.75rem;
+        }
+
+        .form {
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .simple-conjugation {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .simple-form {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .simple-form .pronoun {
+            min-width: 60px;
+        }
+
+        .simple-form .form {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .search-results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .search-result-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .search-result-item:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .quick-chip {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .quick-chip:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .health-stat {
+            background: var(--bg-card);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .health-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .health-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>VerbyBack API Tester</h1>
-            <p>French Conjugation & Search API</p>
-        </header>
+    <aside class="sidebar">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <img src="https://avatars.githubusercontent.com/u/270716935?s=400&u=6268ab360dc58129303eb786f236d49aa1a86863&v=4" alt="Logo" class="logo">
+                <div>
+                    <div class="sidebar-title">VerbyBack</div>
+                    <div class="sidebar-subtitle">Conjugation API</div>
+                </div>
+            </div>
 
-        <div class="sections">
-            <section class="section">
-                <div class="section-header">
-                    <span class="method get">GET</span>
-                    <h2>Health Check</h2>
+            <nav class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                <div class="nav-item active" data-target="health">
+                    <span class="method">GET</span>
+                    <span>Health Check</span>
                 </div>
-                <div class="section-body">
-                    <div class="test-card">
-                        <div class="test-controls">
-                            <button class="btn" onclick="testHealth()">Check Health</button>
-                        </div>
-                        <div id="health-result" class="result" style="display:none;"></div>
-                    </div>
-                </div>
-            </section>
+            </nav>
 
-            <section class="section">
-                <div class="section-header">
-                    <span class="method get">GET</span>
-                    <h2>Search Verbs</h2>
+            <nav class="nav-section">
+                <div class="nav-section-title">Search</div>
+                <div class="nav-item" data-target="search">
+                    <span class="method">GET</span>
+                    <span>Search Verbs</span>
                 </div>
-                <div class="section-body">
-                    <div class="test-card">
-                        <div class="test-header">
-                            <span class="test-title">Search for verbs</span>
-                            <span class="test-path">/api/search/:query</span>
-                        </div>
-                        <div class="test-controls">
-                            <input type="text" id="search-query" placeholder="e.g., parl, mang, fair">
-                            <button class="btn" onclick="testSearch()">Search</button>
-                        </div>
-                        <div id="search-result" class="result" style="display:none;"></div>
-                    </div>
-                </div>
-            </section>
+            </nav>
 
-            <section class="section">
-                <div class="section-header">
-                    <span class="method get">GET</span>
-                    <h2>Conjugate Verb</h2>
+            <nav class="nav-section">
+                <div class="nav-section-title">Conjugation</div>
+                <div class="nav-item" data-target="conjugate-all">
+                    <span class="method">GET</span>
+                    <span>Full Conjugation</span>
                 </div>
-                <div class="section-body">
-                    <div class="test-card">
-                        <div class="test-header">
-                            <span class="test-title">Get all conjugations</span>
-                            <span class="test-path">/api/conjugate/:verb</span>
-                        </div>
-                        <div class="test-controls">
-                            <input type="text" id="conj-verb" placeholder="e.g., manger, avoir, être">
-                            <button class="btn" onclick="testConjugate()">Conjugate</button>
-                        </div>
-                        <div id="conj-result" class="result" style="display:none;"></div>
-                    </div>
-
-                    <div class="test-card">
-                        <div class="test-header">
-                            <span class="test-title">Get conjugations by mode</span>
-                            <span class="test-path">/api/conjugate/:verb/:mode</span>
-                        </div>
-                        <div class="test-controls">
-                            <input type="text" id="conj-verb-2" placeholder="Verb">
-                            <select id="conj-mode">
-                                <option value="">Select Mode</option>
-                                <option value="indicatif">Indicatif</option>
-                                <option value="conditionnel">Conditionnel</option>
-                                <option value="subjonctif">Subjonctif</option>
-                                <option value="imperatif">Impératif</option>
-                                <option value="infinitif">Infinitif</option>
-                                <option value="participe">Participe</option>
-                            </select>
-                            <button class="btn" onclick="testConjugateMode()">Get Mode</button>
-                        </div>
-                        <div id="conj-mode-result" class="result" style="display:none;"></div>
-                    </div>
-
-                    <div class="test-card">
-                        <div class="test-header">
-                            <span class="test-title">Get conjugations by mode & tense</span>
-                            <span class="test-path">/api/conjugate/:verb/:mode/:tense</span>
-                        </div>
-                        <div class="test-controls">
-                            <input type="text" id="conj-verb-3" placeholder="Verb">
-                            <select id="conj-mode-2">
-                                <option value="">Select Mode</option>
-                                <option value="indicatif">Indicatif</option>
-                                <option value="conditionnel">Conditionnel</option>
-                                <option value="subjonctif">Subjonctif</option>
-                                <option value="imperatif">Impératif</option>
-                                <option value="infinitif">Infinitif</option>
-                                <option value="participe">Participe</option>
-                            </select>
-                            <select id="conj-tense">
-                                <option value="">Select Tense</option>
-                            </select>
-                            <button class="btn" onclick="testConjugateTense()">Get Tense</button>
-                        </div>
-                        <div id="conj-tense-result" class="result" style="display:none;"></div>
-                    </div>
+                <div class="nav-item" data-target="conjugate-mode">
+                    <span class="method">GET</span>
+                    <span>By Mode</span>
                 </div>
-            </section>
-
-            <section class="section">
-                <div class="section-header">
-                    <span class="method get">GET</span>
-                    <h2>Random Verb</h2>
+                <div class="nav-item" data-target="conjugate-tense">
+                    <span class="method">GET</span>
+                    <span>By Tense</span>
                 </div>
-                <div class="section-body">
-                    <div class="test-card">
-                        <div class="quick-actions">
-                            <button class="quick-btn" onclick="testRandom()">Random Verb</button>
-                            <button class="quick-btn" onclick="testRandomMode('indicatif')">Random Indicatif</button>
-                            <button class="quick-btn" onclick="testRandomMode('subjonctif')">Random Subjonctif</button>
-                            <button class="quick-btn" onclick="testRandomMode('conditionnel')">Random Conditionnel</button>
-                        </div>
+            </nav>
 
-                        <div class="test-controls">
-                            <input type="text" id="random-mode" placeholder="Mode (optional)">
-                            <input type="text" id="random-tense" placeholder="Tense (optional)">
-                            <button class="btn" onclick="testRandomCustom()">Get Random</button>
-                        </div>
-                        <div id="random-result" class="result" style="display:none;"></div>
-                    </div>
+            <nav class="nav-section">
+                <div class="nav-section-title">Random</div>
+                <div class="nav-item" data-target="random-all">
+                    <span class="method">GET</span>
+                    <span>Random Verb</span>
                 </div>
-            </section>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="https://github.com/Untitled-Master/VerbyBack" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
         </div>
-    </div>
+    </aside>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">API Tester</h1>
+            <p class="page-subtitle">Test VerbyBack endpoints</p>
+        </div>
+
+        <section id="health" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">Health Check</span>
+                </div>
+                <span class="panel-path">/health</span>
+            </div>
+            <div class="panel-body">
+                <button class="btn" onclick="testHealth()">Check Health</button>
+                <div id="health-result" class="result-area" style="margin-top: 1rem;"></div>
+            </div>
+        </section>
+
+        <section id="search" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">Search Verbs</span>
+                </div>
+                <span class="panel-path">/api/search/:query</span>
+            </div>
+            <div class="panel-body">
+                <div class="input-row">
+                    <div class="input-group" style="flex: 2;">
+                        <label>Query</label>
+                        <input type="text" id="search-query" placeholder="e.g., parl, mang, fair...">
+                    </div>
+                    <button class="btn" onclick="testSearch()">Search</button>
+                </div>
+                <div id="search-result" class="result-area"></div>
+            </div>
+        </section>
+
+        <section id="conjugate-all" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">Full Conjugation</span>
+                </div>
+                <span class="panel-path">/api/conjugate/:verb</span>
+            </div>
+            <div class="panel-body">
+                <div class="input-row">
+                    <div class="input-group" style="flex: 2;">
+                        <label>Verb</label>
+                        <input type="text" id="conj-verb" placeholder="e.g., manger, avoir, être...">
+                    </div>
+                    <button class="btn" onclick="testConjugate()">Conjugate</button>
+                </div>
+                <div id="conj-result" class="result-area"></div>
+            </div>
+        </section>
+
+        <section id="conjugate-mode" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">By Mode</span>
+                </div>
+                <span class="panel-path">/api/conjugate/:verb/:mode</span>
+            </div>
+            <div class="panel-body">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Verb</label>
+                        <input type="text" id="conj-verb-2" placeholder="e.g., manger...">
+                    </div>
+                    <div class="input-group">
+                        <label>Mode</label>
+                        <select id="conj-mode">
+                            <option value="">Select mode...</option>
+                            <option value="indicatif">Indicatif</option>
+                            <option value="conditionnel">Conditionnel</option>
+                            <option value="subjonctif">Subjonctif</option>
+                            <option value="imperatif">Impératif</option>
+                            <option value="infinitif">Infinitif</option>
+                            <option value="participe">Participe</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="testConjugateMode()">Get Mode</button>
+                </div>
+                <div id="conj-mode-result" class="result-area"></div>
+            </div>
+        </section>
+
+        <section id="conjugate-tense" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">By Tense</span>
+                </div>
+                <span class="panel-path">/api/conjugate/:verb/:mode/:tense</span>
+            </div>
+            <div class="panel-body">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Verb</label>
+                        <input type="text" id="conj-verb-3" placeholder="e.g., manger...">
+                    </div>
+                    <div class="input-group">
+                        <label>Mode</label>
+                        <select id="conj-mode-2" onchange="updateTenses()">
+                            <option value="">Select mode...</option>
+                            <option value="indicatif">Indicatif</option>
+                            <option value="conditionnel">Conditionnel</option>
+                            <option value="subjonctif">Subjonctif</option>
+                            <option value="imperatif">Impératif</option>
+                            <option value="infinitif">Infinitif</option>
+                            <option value="participe">Participe</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tense</label>
+                        <select id="conj-tense">
+                            <option value="">Select mode first...</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="testConjugateTense()">Get Tense</button>
+                </div>
+                <div id="conj-tense-result" class="result-area"></div>
+            </div>
+        </section>
+
+        <section id="random-all" class="test-panel">
+            <div class="panel-header">
+                <div class="panel-title-group">
+                    <span class="method" style="background: var(--accent); color: white; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600;">GET</span>
+                    <span class="panel-title">Random Verb</span>
+                </div>
+                <span class="panel-path">/api/random</span>
+            </div>
+            <div class="panel-body">
+                <div class="quick-actions">
+                    <button class="quick-chip" onclick="testRandom()">Random</button>
+                    <button class="quick-chip" onclick="testRandomMode('indicatif')">Indicatif</button>
+                    <button class="quick-chip" onclick="testRandomMode('subjonctif')">Subjonctif</button>
+                    <button class="quick-chip" onclick="testRandomMode('conditionnel')">Conditionnel</button>
+                    <button class="quick-chip" onclick="testRandomMode('imperatif')">Impératif</button>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Mode (optional)</label>
+                        <input type="text" id="random-mode" placeholder="e.g., indicatif, subjonctif...">
+                    </div>
+                    <div class="input-group">
+                        <label>Tense (optional)</label>
+                        <input type="text" id="random-tense" placeholder="e.g., present, passe...">
+                    </div>
+                    <button class="btn" onclick="testRandomCustom()">Get Random</button>
+                </div>
+                <div id="random-result" class="result-area"></div>
+            </div>
+        </section>
+    </main>
 
     <script>
         const API_BASE = window.location.origin;
-
+        
         const tensesByMode = {
             'indicatif': ['present', 'passe-simple', 'imparfait', 'futur-simple', 'plus-que-parfait', 'passe-anterieur', 'futur-anterieur', 'passe-compose'],
             'conditionnel': ['present', 'passe'],
@@ -485,19 +872,31 @@
             'participe': ['present', 'passe']
         };
 
-        document.getElementById('conj-mode-2').addEventListener('change', function() {
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const target = document.getElementById(item.dataset.target);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        function updateTenses() {
+            const mode = document.getElementById('conj-mode-2').value;
             const tenseSelect = document.getElementById('conj-tense');
-            tenseSelect.innerHTML = '<option value="">Select Tense</option>';
+            tenseSelect.innerHTML = '<option value="">Select tense...</option>';
             
-            if (this.value && tensesByMode[this.value]) {
-                tensesByMode[this.value].forEach(tense => {
+            if (mode && tensesByMode[mode]) {
+                tensesByMode[mode].forEach(tense => {
                     const option = document.createElement('option');
                     option.value = tense;
-                    option.textContent = tense.replace(/-/g, ' ');
+                    option.textContent = tense.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                     tenseSelect.appendChild(option);
                 });
             }
-        });
+        }
 
         async function fetchAPI(url) {
             const response = await fetch(url);
@@ -505,114 +904,215 @@
             return { status: response.status, data };
         }
 
-        function showResult(elementId, status, data, isHtml = false) {
-            const el = document.getElementById(elementId);
-            el.style.display = 'block';
-            
-            let statusClass = status < 400 ? 'success' : 'error';
-            let statusBadge = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>`;
-            
-            if (isHtml) {
-                el.innerHTML = statusBadge + data;
-            } else {
-                el.className = `result ${statusClass}`;
-                el.textContent = JSON.stringify(data, null, 2);
+        function showLoading(el) {
+            el.classList.add('visible');
+            el.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Loading...</span>
+                </div>
+            `;
+        }
+
+        function showError(el, message) {
+            el.classList.add('visible');
+            el.innerHTML = `
+                <div class="result-header">
+                    <div class="result-status">
+                        <span class="status-badge error">Error</span>
+                    </div>
+                </div>
+                <div class="result-content error">
+                    <pre>${message}</pre>
+                </div>
+            `;
+        }
+
+        function showSuccess(el, status, html) {
+            el.classList.add('visible');
+            el.innerHTML = `
+                <div class="result-header">
+                    <div class="result-status">
+                        <span class="status-badge ok">${status}</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyResult(this)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="result-content">
+                    ${html}
+                </div>
+            `;
+        }
+
+        function copyResult(btn) {
+            const content = btn.closest('.result-area').querySelector('.result-content pre');
+            if (content) {
+                navigator.clipboard.writeText(content.textContent);
+                btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy';
+                }, 2000);
             }
         }
 
         function formatConjugations(data) {
             if (!data.conjugations) {
-                return JSON.stringify(data, null, 2);
+                return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             }
 
-            let html = `<div class="verb-display">${data.verb}</div>`;
-            html += '<div class="conjugation-grid">';
+            const pronouns = ['Je', 'Tu', 'Il/Elle', 'Nous', 'Vous', 'Ils/Elles'];
+            const modeIcons = {
+                'Indicatif': 'I', 'Conditionnel': 'C', 'Subjonctif': 'S', 'Impératif': '!',
+                'Infinitif': '∞', 'Participe': 'P', 'Impersonnel': '?'
+            };
+
+            let html = `
+                <div class="verb-hero">
+                    <div class="verb-name">${data.verb}</div>
+                    <div class="verb-meta">French verb conjugation</div>
+                </div>
+                <div class="conjugation-body">
+            `;
 
             for (const [mode, tenses] of Object.entries(data.conjugations)) {
-                html += `<div class="mode-section">`;
-                html += `<div class="mode-title">${mode}</div>`;
-                html += '<div class="tense-grid">';
+                const icon = modeIcons[mode] || '?';
+                html += `
+                    <div class="mode-block">
+                        <div class="mode-header" onclick="this.nextElementSibling.classList.toggle('expanded')">
+                            <div class="mode-icon">${icon}</div>
+                            <span class="mode-name">${mode}</span>
+                            <span class="mode-toggle">▾</span>
+                        </div>
+                        <div class="tense-grid">
+                            <div class="tense-grid-inner">
+                `;
 
                 for (const [tense, forms] of Object.entries(tenses)) {
-                    html += `<div class="tense-row">`;
-                    html += `<span class="tense-name">${tense}</span>`;
-                    html += `<div class="forms">`;
+                    html += `
+                        <div class="tense-card">
+                            <div class="tense-name">${tense}</div>
+                            <div class="conjugation-table">
+                    `;
                     
-                    const pronouns = ['Je', 'Tu', 'Il/Elle', 'Nous', 'Vous', 'Ils/Elles'];
                     forms.forEach((form, i) => {
                         const pronoun = pronouns[i % pronouns.length];
-                        html += `<span class="form"><span class="pronoun">${pronoun}</span>${form}</span>`;
+                        html += `
+                            <div class="conjugation-row">
+                                <span class="pronoun">${pronoun}</span>
+                                <span class="form">${form}</span>
+                            </div>
+                        `;
                     });
-                    
+
                     html += `</div></div>`;
                 }
 
-                html += '</div></div>';
+                html += `</div></div></div>`;
             }
 
-            html += '</div>';
+            html += `</div>`;
             return html;
         }
 
         function formatSimpleResult(data) {
             if (data.forms) {
                 const pronouns = ['Je', 'Tu', 'Il/Elle', 'Nous', 'Vous', 'Ils/Elles'];
-                let html = `<div class="verb-display">${data.verb}</div>`;
-                html += `<div style="text-align:center;color:#a855f7;margin-bottom:1rem;">${data.mode}${data.tense ? ' • ' + data.tense : ''}</div>`;
-                html += '<div class="simple-forms">';
+                let html = `
+                    <div class="verb-hero">
+                        <div class="verb-name">${data.verb}</div>
+                        <div class="verb-meta">
+                            <span>${data.mode}</span>${data.tense ? ' • <span>' + data.tense + '</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="simple-conjugation">
+                `;
+
                 data.forms.forEach((form, i) => {
                     const pronoun = pronouns[i % pronouns.length];
-                    html += `<span class="simple-form"><span class="pronoun">${pronoun}</span>${form}</span>`;
+                    html += `<div class="simple-form"><span class="pronoun">${pronoun}</span><span class="form">${form}</span></div>`;
                 });
-                html += '</div>';
+
+                html += `</div>`;
                 return html;
             }
-            return JSON.stringify(data, null, 2);
+            return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        function formatSearchResults(data) {
+            if (Array.isArray(data)) {
+                return `
+                    <div class="search-results">
+                        ${data.map(v => `<div class="search-result-item" onclick="conjugateVerb('${v}')">${v}</div>`).join('')}
+                    </div>
+                `;
+            }
+            return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        function formatHealth(data) {
+            return `
+                <div class="health-grid">
+                    <div class="health-stat">
+                        <div class="health-stat-value">${data.status}</div>
+                        <div class="health-stat-label">Status</div>
+                    </div>
+                    <div class="health-stat">
+                        <div class="health-stat-value" style="font-size: 0.9rem;">${new Date(data.timestamp).toLocaleTimeString()}</div>
+                        <div class="health-stat-label">Timestamp</div>
+                    </div>
+                    <div class="health-stat">
+                        <div class="health-stat-value">OK</div>
+                        <div class="health-stat-label">Service</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function conjugateVerb(verb) {
+            document.getElementById('conj-verb').value = verb;
+            document.getElementById('conjugate-all').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => testConjugate(), 300);
         }
 
         async function testHealth() {
             const el = document.getElementById('health-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/health`);
-                showResult('health-result', status, data);
+                showSuccess(el, status, formatHealth(data));
             } catch (e) {
-                showResult('health-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
         async function testSearch() {
             const query = document.getElementById('search-query').value.trim();
             if (!query) return;
-            
             const el = document.getElementById('search-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/search/${encodeURIComponent(query)}`);
-                showResult('search-result', status, data);
+                showSuccess(el, status, formatSearchResults(data));
             } catch (e) {
-                showResult('search-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
         async function testConjugate() {
             const verb = document.getElementById('conj-verb').value.trim();
             if (!verb) return;
-            
             const el = document.getElementById('conj-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}`);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatConjugations(data);
+                showSuccess(el, status, formatConjugations(data));
             } catch (e) {
-                showResult('conj-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
@@ -620,17 +1120,13 @@
             const verb = document.getElementById('conj-verb-2').value.trim();
             const mode = document.getElementById('conj-mode').value;
             if (!verb || !mode) return;
-            
             const el = document.getElementById('conj-mode-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}/${mode}`);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+                showSuccess(el, status, formatSimpleResult(data));
             } catch (e) {
-                showResult('conj-mode-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
@@ -639,67 +1135,52 @@
             const mode = document.getElementById('conj-mode-2').value;
             const tense = document.getElementById('conj-tense').value;
             if (!verb || !mode || !tense) return;
-            
             const el = document.getElementById('conj-tense-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/conjugate/${encodeURIComponent(verb)}/${mode}/${tense}`);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+                showSuccess(el, status, formatSimpleResult(data));
             } catch (e) {
-                showResult('conj-tense-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
         async function testRandom() {
             const el = document.getElementById('random-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/random`);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatConjugations(data);
+                showSuccess(el, status, formatConjugations(data));
             } catch (e) {
-                showResult('random-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
         async function testRandomMode(mode) {
             document.getElementById('random-mode').value = mode;
             const el = document.getElementById('random-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(`${API_BASE}/api/random/${mode}`);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + formatSimpleResult(data);
+                showSuccess(el, status, formatSimpleResult(data));
             } catch (e) {
-                showResult('random-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
         async function testRandomCustom() {
             const mode = document.getElementById('random-mode').value.trim();
             const tense = document.getElementById('random-tense').value.trim();
-            
             let url = `${API_BASE}/api/random`;
             if (mode) url += `/${mode}`;
             if (tense) url += `/${tense}`;
-            
             const el = document.getElementById('random-result');
-            el.style.display = 'block';
-            el.innerHTML = '<span class="loading"></span>';
-            
+            showLoading(el);
             try {
                 const { status, data } = await fetchAPI(url);
-                el.className = 'result';
-                el.innerHTML = `<span class="status ${status < 400 ? 'ok' : 'error'}">${status}</span>` + (mode ? formatSimpleResult(data) : formatConjugations(data));
+                showSuccess(el, status, mode ? formatSimpleResult(data) : formatConjugations(data));
             } catch (e) {
-                showResult('random-result', 500, { error: e.message });
+                showError(el, e.message);
             }
         }
 
